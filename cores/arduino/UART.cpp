@@ -164,6 +164,13 @@ void UartClass::begin(unsigned long baud, uint16_t config)
     int8_t sigrow_val = SIGROW.OSC16ERR5V;
     baud_setting += (baud_setting * sigrow_val) / 1024;
 
+    if (baud_setting > 0xFFFF) {
+        // Baud setting too low
+        // There's no way to communicate the issue to the user
+        // A static_assert + compile time error would surely be better
+        return;
+    }
+
     // assign the baud_setting, a.k.a. BAUD (USART Baud Rate Register)
     (*_hwserial_module).BAUD = (int16_t) baud_setting;
 
